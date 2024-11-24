@@ -18,22 +18,24 @@ class MovieController extends Controller
     }
 
     /**
-     * Store a newly created movie in storage.
+     * Store newly created movies in storage.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'classification' => 'required|string|max:255',
-            'release_date' => 'required|date',
-            'review' => 'required|string',
-            'season' => 'nullable|string',
+            '*.name' => 'required|string|max:255',
+            '*.classification' => 'required|string|max:255',
+            '*.release_date' => 'required|date',
+            '*.review' => 'required|string',
+            '*.season' => 'nullable|string',
         ]);
 
-        // Create the movie
-        $movie = Movie::create($validated);
+        // Create the movies
+        $movies = collect($request->all())->map(function ($movie) {
+            return Movie::create($movie);
+        });
 
-        return response()->json($movie, 201);
+        return response()->json($movies, 201); // Return 201 Created status code
     }
 
     /**
